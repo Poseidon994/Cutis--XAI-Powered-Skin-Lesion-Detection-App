@@ -1,0 +1,53 @@
+# docker compose up --build        (then open http://localhost:8080)
+# GPU:  docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
+services:
+  ml:
+    build:
+      context: ./ml-service
+      args:
+        TORCH_INDEX: ${TORCH_INDEX:-https://download.pytorch.org/whl/cpu}
+    environment:
+      ARTIFACTS_DIR: /artifacts
+      ML_SERVICE_KEY: ${ML_SERVICE_KEY:?set ML_SERVICE_KEY in .env}
+      ML_DEVICE: ${ML_DEVICE:-auto}
+      ML_MAX_FOLDS: ${ML_MAX_FOLDS:-0}
+      ML_TTA_VIEWS: ${ML_TTA_VIEWS:-0}
+      XAI_FOLDS: ${XAI_FOLDS:-1}
+      XAI_LIME_SAMPLES: ${XAI_LIME_SAMPLES:-0}
+      XAI_SHAP_SAMPLES: ${XAI_SHAP_SAMPLES:-0}
+      XAI_CAM_METHOD: ${XAI_CAM_METHOD:-gradcam}
+    volumes:
+      - ${ARTIFACTS_PATH:-./artifacts}:/artifacts:ro
+    restart: unless-stopped
+
+  server:
+    build: ./server
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATA_DIR: /data
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env (at least 32 random characters)}
+      CLINICIAN_INVITE_CODE: ${CLINICIAN_INVITE_CODE:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      TRUST_PROXY: 1
+      ML_SERVICE_URL: http://ml:8000
+      ML_SERVICE_KEY: ${ML_SERVICE_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+      GROQ_FALLBACK_MODELS: ${GROQ_FALLBACK_MODELS:-}
+    volumes:
+      - cutis-data:/data
+    depends_on:
+      - ml
+    restart: unless-stopped
+
+  web:
+    build: ./web
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  cutis-data:

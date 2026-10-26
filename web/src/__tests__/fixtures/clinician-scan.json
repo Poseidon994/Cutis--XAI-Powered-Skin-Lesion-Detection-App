@@ -1,0 +1,294 @@
+{
+ "scan": {
+  "id": "4be72e2b-998c-4d09-8029-e3cc6aed76cb",
+  "createdAt": "2026-10-25T03:13:47.824Z",
+  "bodySite": "posterior_torso",
+  "lesionLabel": "R scapula",
+  "patientRef": "MRN-0042",
+  "age": 58,
+  "sex": "male",
+  "symptoms": [],
+  "duration": null,
+  "notes": null,
+  "tier": "high",
+  "score": 2.31,
+  "topType": "Melanoma",
+  "prediction": {
+   "score": 2.31,
+   "tier": "high",
+   "tier_label": "High concern",
+   "tier_rank": 3,
+   "source": "oof",
+   "thresholds": {
+    "sens95": 0.61,
+    "sens90": 1.04,
+    "sens80": 1.54
+   },
+   "percentile_benign": 96.4,
+   "sensitivity_at_or_above": 0.81,
+   "cancer_rate_at_or_above": 0.021,
+   "base_rate": 0.00098,
+   "enrichment": 21.4,
+   "enrichment_n": 612,
+   "probability_at_training_prevalence": 0.012,
+   "suspicious": 0.4,
+   "type_probs": {
+    "Melanoma": 0.58,
+    "BCC": 0.31,
+    "SCC": 0.11
+   },
+   "top_type": "Melanoma",
+   "per_backbone": [
+    {
+     "name": "convnext_tiny",
+     "z": 2.1,
+     "fold_sd": 0.3,
+     "n_folds": 5,
+     "tier": "elevated"
+    },
+    {
+     "name": "edgenext_base",
+     "z": 2.6,
+     "fold_sd": 0.4,
+     "n_folds": 5,
+     "tier": "high"
+    },
+    {
+     "name": "eva02_small",
+     "z": 1.9,
+     "fold_sd": 0.2,
+     "n_folds": 5,
+     "tier": "elevated"
+    },
+    {
+     "name": "swin_t",
+     "z": 2.4,
+     "fold_sd": 0.5,
+     "n_folds": 5,
+     "tier": "elevated"
+    }
+   ],
+   "network_sd": 0.8,
+   "n_networks": 20,
+   "tta_views": 2,
+   "agreement": {
+    "backbones": 4,
+    "same_tier_as_ensemble": 3,
+    "flagging_elevated_or_high": 4
+   }
+  },
+  "quality": {
+   "original_size": [
+    400,
+    400
+   ],
+   "cropped_to_square": false,
+   "mean_luminance": 120,
+   "sharpness": 30,
+   "warnings": []
+  },
+  "model": {
+   "version": "v4",
+   "created": "2026-10-19 10:00:00",
+   "device": "cpu",
+   "backbones": [
+    "convnext_tiny",
+    "edgenext_base",
+    "eva02_small",
+    "swin_t"
+   ],
+   "networks": 20
+  },
+  "xai": {
+   "gradcam": {
+    "status": "done",
+    "title": "Grad-CAM",
+    "signed": false,
+    "summary": {
+     "focus": "central",
+     "direction": "centre",
+     "center_share": 0.62,
+     "edge_share": 0.05,
+     "concentration": 0.18,
+     "n_networks": 4,
+     "network_agreement": 0.71,
+     "local_r2": 0.86,
+     "n_samples": 150,
+     "positive_share": 0.64,
+     "top_regions": [
+      {
+       "weight": 0.12,
+       "area_share": 0.05,
+       "direction": "upper left"
+      }
+     ]
+    },
+    "explainedScore": {
+     "subset_z": 2.2,
+     "n_networks": 4
+    },
+    "params": {},
+    "runtimeS": 2.5,
+    "url": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/gradcam?v=1792898027962"
+   },
+   "lime": {
+    "status": "done",
+    "title": "LIME",
+    "signed": true,
+    "summary": {
+     "focus": "central",
+     "direction": "upper left",
+     "center_share": 0.62,
+     "edge_share": 0.05,
+     "concentration": 0.18,
+     "n_networks": 4,
+     "network_agreement": 0.71,
+     "local_r2": 0.86,
+     "n_samples": 150,
+     "positive_share": 0.64,
+     "top_regions": [
+      {
+       "weight": 0.12,
+       "area_share": 0.05,
+       "direction": "upper left"
+      }
+     ]
+    },
+    "explainedScore": {
+     "subset_z": 2.2,
+     "n_networks": 4
+    },
+    "params": {},
+    "runtimeS": 2.5,
+    "url": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/lime?v=1792898028100"
+   },
+   "shap": {
+    "status": "done",
+    "title": "SHAP",
+    "signed": true,
+    "summary": {
+     "focus": "central",
+     "direction": "centre",
+     "center_share": 0.62,
+     "edge_share": 0.05,
+     "concentration": 0.18,
+     "n_networks": 4,
+     "network_agreement": 0.71,
+     "local_r2": 0.86,
+     "n_samples": 150,
+     "positive_share": 0.64,
+     "top_regions": [
+      {
+       "weight": 0.12,
+       "area_share": 0.05,
+       "direction": "upper left"
+      }
+     ]
+    },
+    "explainedScore": {
+     "subset_z": 2.2,
+     "n_networks": 4
+    },
+    "params": {},
+    "runtimeS": 2.5,
+    "url": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/shap?v=1792898028237"
+   },
+   "agreement": {
+    "methods": [
+     "gradcam",
+     "lime",
+     "shap"
+    ],
+    "pairs": [
+     {
+      "a": "gradcam",
+      "b": "lime",
+      "iou_top20": 0.704,
+      "correlation": 0.924
+     },
+     {
+      "a": "gradcam",
+      "b": "shap",
+      "iou_top20": 0.704,
+      "correlation": 0.93
+     },
+     {
+      "a": "lime",
+      "b": "shap",
+      "iou_top20": 0.614,
+      "correlation": 0.865
+     }
+    ],
+    "mean_iou_top20": 0.674,
+    "level": "high",
+    "chance_iou_top20": 0.11
+   }
+  },
+  "agent": {
+   "status": "ready",
+   "source": "groq",
+   "model": "test-model",
+   "generatedAt": "2026-10-25T03:13:48.242Z",
+   "report": {
+    "summary": "Elevated concern; type head favours melanoma.",
+    "model_findings": "Score z = 2.31, percentile 96.4.",
+    "supporting_evidence": [
+     "Grad-CAM central.",
+     "LIME upper left."
+    ],
+    "differential": [
+     {
+      "entity": "Melanoma",
+      "rationale": "Type head 58%."
+     },
+     {
+      "entity": "Dysplastic naevus",
+      "rationale": "Benign mimic."
+     }
+    ],
+    "recommended_workup": [
+     "Dermoscopy."
+    ],
+    "management_options": [
+     {
+      "scenario": "If melanoma is confirmed",
+      "options": [
+       "Wide local excision."
+      ]
+     }
+    ],
+    "medication_options": [
+     {
+      "scenario": "Superficial BCC",
+      "agents": [
+       "Imiquimod 5% cream"
+      ],
+      "notes": "Follow local formulary."
+     }
+    ],
+    "advisory": [
+     "Sun protection."
+    ],
+    "history_and_trend": null,
+    "limitations": [
+     "Image-only branch."
+    ],
+    "disposition": {
+     "tier": "high",
+     "rule": "At or above the 80%-sensitivity operating point (the strictest cut-off). Urgent specialist review; biopsy or excision for histopathology is usually warranted unless dermoscopy is clearly benign."
+    },
+    "disclaimer": "Cutis is a research prototype and not a medical device. Outputs are decision support for a qualified clinician, are not a diagnosis, and must be correlated with history, examination and dermoscopy. Histopathology is the reference standard. Management options listed are general and must be checked against current local guidelines."
+   }
+  },
+  "files": {
+   "original": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/original",
+   "modelView": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/model_view"
+  },
+  "guidance": {
+   "kind": "disposition",
+   "text": "At or above the 80%-sensitivity operating point (the strictest cut-off). Urgent specialist review; biopsy or excision for histopathology is usually warranted unless dermoscopy is clearly benign."
+  }
+ },
+ "messages": [],
+ "history": []
+}

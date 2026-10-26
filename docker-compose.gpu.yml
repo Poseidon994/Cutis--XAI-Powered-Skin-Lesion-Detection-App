@@ -1,0 +1,11 @@
+# Adds an NVIDIA GPU to the ML service. Set TORCH_INDEX in .env to the CUDA wheel index that matches your driver,
+# e.g. https://download.pytorch.org/whl/cu126 (see pytorch.org/get-started). Needs the NVIDIA Container Toolkit on the host.
+services:
+  ml:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

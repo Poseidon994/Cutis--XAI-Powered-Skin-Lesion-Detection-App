@@ -1,0 +1,18 @@
+{
+ "scans": [
+  {
+   "id": "4be72e2b-998c-4d09-8029-e3cc6aed76cb",
+   "createdAt": "2026-10-25T03:13:47.824Z",
+   "bodySite": "posterior_torso",
+   "lesionLabel": "R scapula",
+   "patientRef": "MRN-0042",
+   "tier": "high",
+   "tierLabel": "High concern",
+   "score": 2.31,
+   "topType": "Melanoma",
+   "hasReport": true,
+   "thumb": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/model_view"
+  }
+ ],
+ "total": 1
+}

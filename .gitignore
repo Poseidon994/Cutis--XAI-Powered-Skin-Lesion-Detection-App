@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+.env
+server/.env
+__pycache__/
+.pytest_cache/
+*.pyc
+artifacts/*
+!artifacts/README.txt
