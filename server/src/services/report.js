@@ -250,13 +250,62 @@ export function buildReportPdf({ scan, user, role, report, meta, history, filePa
     doc.y = y + 4;
   }
 
+  // ------------------------------------------------------------------------------------------------ sources / grounding
+  // NCI asks for credit as the source and a link to the original page under its original title; Cutis's own
+  // generated text is never labelled PDQ, and no endorsement by the publishers is implied.
+  const sources = Array.isArray(report.sources) ? report.sources : [];
+  const rag = meta?.rag || {};
+  const grounding = report.grounding || null;
+  const groundingLine = grounding
+    ? grounding.status === 'grounded'
+      ? `All ${grounding.items} checked statements in this report carry a cited source passage.`
+      : grounding.status === 'partial'
+        ? `${grounding.cited} of ${grounding.items} checked statements carry a cited source passage.`
+        : grounding.status === 'ungrounded'
+          ? 'No statement in this report carried a valid source marker from the guideline library.'
+          : grounding.status === 'no_claims'
+            ? 'There were no checkable guideline statements in this report.'
+            : 'This report was not checked against the guideline library.'
+    : 'This report was not checked against the guideline library.';
+  if (sources.length) {
+    h2('Sources');
+    para(
+      `${groundingLine} Passages are marked [P1], [P2]... in the text above. Library snapshot built ${rag.built_at ? fmtDate(rag.built_at) : 'unknown date'}; pages are re-fetched periodically.`,
+      { size: 8.5, color: MUTED },
+    );
+    sources.forEach((s) => {
+      space(46);
+      const y = doc.y;
+      doc.font('Helvetica-Bold').fontSize(9.5).fillColor(INK);
+      const title = clean(`[${s.label}] ${s.title}`);
+      if (s.url) {
+        doc.text(title, M, y, { width: W, link: s.url, underline: false });
+      } else {
+        doc.text(title, M, y, { width: W });
+      }
+      doc.font('Helvetica').fontSize(8.5).fillColor(MUTED).text(clean([s.publisher, s.section, s.page != null ? `p. ${s.page}` : null].filter(Boolean).join(' - ')), M, doc.y, { width: W });
+      if (s.url) doc.font('Helvetica').fontSize(8).fillColor(MUTED).text(clean(s.url), M, doc.y, { width: W, link: s.url });
+      if (role === 'clinician' && s.excerpt) {
+        const ex = s.excerpt.length > 320 ? `${s.excerpt.slice(0, 317)}...` : s.excerpt;
+        doc.font('Helvetica-Oblique').fontSize(8).fillColor(MUTED).text(clean(`"${ex}"`), M, doc.y, { width: W, lineGap: 1.5 });
+      }
+      doc.moveDown(0.3);
+    });
+    const publishers = [...new Set(sources.map((s) => s.publisher).filter(Boolean))];
+    para(
+      `Credit: ${publishers.join(', ')}. Excerpts from the original pages are reused under each publisher's reuse policy, with a link to the original under its original title. Cutis is a research prototype, is not endorsed by these publishers, and this generated report is not an NCI, CDC or PDQ product.`,
+      { size: 8, color: MUTED },
+    );
+  }
+
   // ------------------------------------------------------------------------------------------------ provenance
   h2('About this report');
   const x = scan.xai || {};
   para(
     `Model: ${model?.version ? `Cutis image ensemble ${model.version}` : 'Cutis image ensemble'}${model?.created ? ` (trained ${model.created})` : ''}; ${model?.networks ?? '?'} networks on ${(model?.backbones || []).join(', ') || 'n/a'}. ` +
       `Explanations: ${x.gradcam?.title || 'Grad-CAM'}, LIME${x.lime?.summary?.n_samples ? ` (${x.lime.summary.n_samples} samples)` : ''}, SHAP${x.shap?.summary?.n_samples ? ` (${x.shap.summary.n_samples} samples)` : ''}. ` +
-      `Explanatory text: ${meta?.source === 'groq' ? `written by an AI language model (${meta.model}) from the results above and checked against fixed safety rules` : 'standard template text (no language model was used)'}. ` +
+      `Explanatory text: ${meta?.source === 'groq' ? `written by an AI language model (${meta.model}) from the results above, checked against fixed safety rules${sources.length ? ` and against ${sources.length} cited passages from the guideline library${meta?.rag?.built_at ? ` (snapshot ${fmtDate(meta.rag.built_at)})` : ''}` : ''}` : 'standard template text (no language model was used)'}. ` +
+      (!sources.length ? `${groundingLine} ` : '') +
       `Prepared for ${user.name}${user.organisation ? `, ${user.organisation}` : ''}.`,
     { size: 8.5, color: MUTED },
   );

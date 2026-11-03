@@ -1,6 +1,27 @@
 # docker compose up --build        (then open http://localhost:8080)
 # GPU:  docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
+#
+# The app stores accounts, scans, chat history and report metadata in MySQL (the `db` service below).
+# First run of the rag profile builds the guideline library:
+#   docker compose run --rm rag-build          (fetches the pages and builds rag/index, downloads the embedder)
 services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-cutis}
+      MYSQL_USER: ${MYSQL_USER:-cutis}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+    volumes:
+      - cutis-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
   ml:
     build:
       context: ./ml-service
@@ -16,9 +37,37 @@ services:
       XAI_LIME_SAMPLES: ${XAI_LIME_SAMPLES:-0}
       XAI_SHAP_SAMPLES: ${XAI_SHAP_SAMPLES:-0}
       XAI_CAM_METHOD: ${XAI_CAM_METHOD:-gradcam}
+      RAG_DIR: /rag
+      RAG_ENABLED: ${RAG_ENABLED:-1}
+      RAG_EMBEDDER: ${RAG_EMBEDDER:-auto}
+      RAG_MIN_COSINE: ${RAG_MIN_COSINE:-0.55}
+      RAG_MIN_TERMS: ${RAG_MIN_TERMS:-3}
+      RAG_MAX_PASSAGES: ${RAG_MAX_PASSAGES:-6}
+      RAG_MAX_PER_SOURCE: ${RAG_MAX_PER_SOURCE:-2}
     volumes:
+      # the model service only reads the library and its index; the embedding-model cache stays writable on its own volume
+      - ${RAG_DIR:-./rag}:/rag:ro
+      - rag-models:/rag/models
       - ${ARTIFACTS_PATH:-./artifacts}:/artifacts:ro
     restart: unless-stopped
+
+  # One-off: download/refresh the guideline pages and rebuild rag/index inside the ml image.
+  #   docker compose run --rm rag-build            fetch + build (downloads the embedder on first use)
+  #   docker compose run --rm rag-build python -m scripts.rag_eval
+  rag-build:
+    build:
+      context: ./ml-service
+      args:
+        TORCH_INDEX: ${TORCH_INDEX:-https://download.pytorch.org/whl/cpu}
+    profiles: ["rag"]
+    environment:
+      RAG_DIR: /rag
+      RAG_EMBEDDER: ${RAG_EMBEDDER:-auto}
+      RAG_MIN_COSINE: ${RAG_MIN_COSINE:-0.55}
+    volumes:
+      - ${RAG_DIR:-./rag}:/rag
+      - rag-models:/rag/models
+    command: bash -lc "python -m scripts.rag_fetch; python -m scripts.rag_build"
 
   server:
     build: ./server
@@ -30,15 +79,26 @@ services:
       CLINICIAN_INVITE_CODE: ${CLINICIAN_INVITE_CODE:-}
       COOKIE_SECURE: ${COOKIE_SECURE:-0}
       TRUST_PROXY: 1
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER:-cutis}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE:-cutis}
       ML_SERVICE_URL: http://ml:8000
       ML_SERVICE_KEY: ${ML_SERVICE_KEY}
+      RAG_ENABLED: ${RAG_ENABLED:-1}
+      RAG_MAX_PASSAGES: ${RAG_MAX_PASSAGES:-6}
+      RAG_TIMEOUT_MS: ${RAG_TIMEOUT_MS:-8000}
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
       GROQ_FALLBACK_MODELS: ${GROQ_FALLBACK_MODELS:-}
     volumes:
       - cutis-data:/data
     depends_on:
-      - ml
+      db:
+        condition: service_healthy
+      ml:
+        condition: service_started
     restart: unless-stopped
 
   web:
@@ -51,3 +111,5 @@ services:
 
 volumes:
   cutis-data:
+  cutis-mysql:
+  rag-models:

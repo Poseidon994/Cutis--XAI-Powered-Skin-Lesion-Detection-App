@@ -1,0 +1,4 @@
+corpus/raw/
+models/
+index/*
+!index/.gitkeep

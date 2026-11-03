@@ -1,7 +1,7 @@
 {
  "scan": {
-  "id": "4be72e2b-998c-4d09-8029-e3cc6aed76cb",
-  "createdAt": "2026-10-25T03:13:47.824Z",
+  "id": "294ff602-b6b0-47ec-b296-912cf1e04fc8",
+  "createdAt": "2026-11-01T04:12:27.018Z",
   "bodySite": "posterior_torso",
   "lesionLabel": "R scapula",
   "patientRef": "MRN-0042",
@@ -129,7 +129,7 @@
     },
     "params": {},
     "runtimeS": 2.5,
-    "url": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/gradcam?v=1792898027962"
+    "url": "/api/scans/294ff602-b6b0-47ec-b296-912cf1e04fc8/files/gradcam?v=1793506347163"
    },
    "lime": {
     "status": "done",
@@ -160,7 +160,7 @@
     },
     "params": {},
     "runtimeS": 2.5,
-    "url": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/lime?v=1792898028100"
+    "url": "/api/scans/294ff602-b6b0-47ec-b296-912cf1e04fc8/files/lime?v=1793506347299"
    },
    "shap": {
     "status": "done",
@@ -191,7 +191,7 @@
     },
     "params": {},
     "runtimeS": 2.5,
-    "url": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/shap?v=1792898028237"
+    "url": "/api/scans/294ff602-b6b0-47ec-b296-912cf1e04fc8/files/shap?v=1793506347435"
    },
    "agreement": {
     "methods": [
@@ -228,7 +228,14 @@
    "status": "ready",
    "source": "groq",
    "model": "test-model",
-   "generatedAt": "2026-10-25T03:13:48.242Z",
+   "generatedAt": "2026-11-01T04:12:27.444Z",
+   "rag": {
+    "status": "ok",
+    "reason": null,
+    "embedder": "BAAI/bge-small-en-v1.5",
+    "corpus_sha": "a1b2c3d4e5f60718",
+    "built_at": "2026-10-20T00:00:00+00:00"
+   },
    "report": {
     "summary": "Elevated concern; type head favours melanoma.",
     "model_findings": "Score z = 2.31, percentile 96.4.",
@@ -247,13 +254,14 @@
      }
     ],
     "recommended_workup": [
-     "Dermoscopy."
+     "Dermoscopy [P1]."
     ],
     "management_options": [
      {
       "scenario": "If melanoma is confirmed",
       "options": [
-       "Wide local excision."
+       "Wide local excision with margins by thickness [P1].",
+       "Radiotherapy when surgery is unsuitable."
       ]
      }
     ],
@@ -261,7 +269,7 @@
      {
       "scenario": "Superficial BCC",
       "agents": [
-       "Imiquimod 5% cream"
+       "Imiquimod 5% cream [P2]."
       ],
       "notes": "Follow local formulary."
      }
@@ -277,12 +285,73 @@
      "tier": "high",
      "rule": "At or above the 80%-sensitivity operating point (the strictest cut-off). Urgent specialist review; biopsy or excision for histopathology is usually warranted unless dermoscopy is clearly benign."
     },
-    "disclaimer": "Cutis is a research prototype and not a medical device. Outputs are decision support for a qualified clinician, are not a diagnosis, and must be correlated with history, examination and dermoscopy. Histopathology is the reference standard. Management options listed are general and must be checked against current local guidelines."
+    "disclaimer": "Cutis is a research prototype and not a medical device. Outputs are decision support for a qualified clinician, are not a diagnosis, and must be correlated with history, examination and dermoscopy. Histopathology is the reference standard. Management options listed are general and must be checked against current local guidelines.",
+    "sources": [
+     {
+      "label": "P1",
+      "chunk_id": "S01-003",
+      "source_id": "S01",
+      "title": "Melanoma Treatment (PDQ)-Health Professional Version",
+      "publisher": "NCI",
+      "url": "https://example.org/s01",
+      "licence": "NCI text, free of copyright; credit NCI",
+      "section": "Surgical excision",
+      "page": 4,
+      "excerpt": "Wide local excision margins depend on tumour thickness; sentinel lymph node biopsy is considered for intermediate thickness melanoma."
+     },
+     {
+      "label": "P2",
+      "chunk_id": "S02-011",
+      "source_id": "S02",
+      "title": "Skin Cancer Treatment (PDQ)-Health Professional Version",
+      "publisher": "NCI",
+      "url": "https://example.org/s02",
+      "licence": "NCI text, free of copyright; credit NCI",
+      "section": "Basal cell carcinoma",
+      "page": 9,
+      "excerpt": "Superficial basal cell carcinoma at low-risk sites may be treated with topical imiquimod or fluorouracil."
+     }
+    ],
+    "grounding": {
+     "status": "partial",
+     "items": 7,
+     "cited": 3,
+     "ratio": 0.42857142857142855,
+     "by_field": {
+      "supporting_evidence": {
+       "items": 2,
+       "cited": 0
+      },
+      "differential": {
+       "items": 2,
+       "cited": 0
+      },
+      "recommended_workup": {
+       "items": 1,
+       "cited": 1
+      },
+      "management_options": {
+       "items": 1,
+       "cited": 1
+      },
+      "medication_options": {
+       "items": 1,
+       "cited": 1
+      }
+     },
+     "dropped": [
+      {
+       "field": "medication_options",
+       "text": "Vismodegib for locally advanced disease with no supplied source."
+      }
+     ],
+     "scrubbed": 0
+    }
    }
   },
   "files": {
-   "original": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/original",
-   "modelView": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/model_view"
+   "original": "/api/scans/294ff602-b6b0-47ec-b296-912cf1e04fc8/files/original",
+   "modelView": "/api/scans/294ff602-b6b0-47ec-b296-912cf1e04fc8/files/model_view"
   },
   "guidance": {
    "kind": "disposition",

@@ -11,7 +11,7 @@ import { requireAuth, requireCustomHeader } from './middleware/auth.js';
 import { authRouter } from './routes/auth.js';
 import { scansRouter } from './routes/scans.js';
 
-export function createApp(store = new Store(config.dataDir)) {
+export function createApp(store = new Store(config.db)) {
   const app = express();
   if (config.trustProxy) app.set('trust proxy', config.trustProxy);
   app.disable('x-powered-by');
@@ -27,7 +27,13 @@ export function createApp(store = new Store(config.dataDir)) {
 
   app.get('/api/health', async (_req, res) => {
     const m = await ml.health();
-    res.json({ server: 'ok', ml: { status: m.status, ready: Boolean(m.ready), device: m.device, networks: m.networks, notes: m.notes, error: m.error }, agent: { configured: agentConfigured(), model: agentConfigured() ? config.groq.model : null }, clinicianSignup: Boolean(config.clinicianInvite) || !config.production, clinicianInviteRequired: Boolean(config.clinicianInvite) });
+    let db = 'ok';
+    try {
+      await store.ready;
+    } catch (e) {
+      db = `error: ${String(e?.message || e).slice(0, 120)}`;
+    }
+    res.json({ server: 'ok', db, ml: { status: m.status, ready: Boolean(m.ready), device: m.device, networks: m.networks, notes: m.notes, rag: m.rag ?? null, error: m.error }, agent: { configured: agentConfigured(), model: agentConfigured() ? config.groq.model : null }, rag: { enabled: config.rag.enabled }, clinicianSignup: Boolean(config.clinicianInvite) || !config.production, clinicianInviteRequired: Boolean(config.clinicianInvite) });
   });
 
   app.get('/api/model-card', requireAuth(store), async (_req, res) => {

@@ -5,10 +5,10 @@ function daysBetween(a, b) {
 }
 
 // Earlier scans of the same lesion: same lesion label, or (no label) same patient reference and body site, or same body site.
-export function relatedHistory(store, scan) {
+export async function relatedHistory(store, scan) {
   const label = (scan.lesionLabel || '').trim().toLowerCase();
   const ref = (scan.patientRef || '').trim().toLowerCase();
-  const all = store.listScans(scan.userId, { limit: 500 });
+  const all = await store.listScans(scan.userId, { limit: 500 });
   return all
     .filter((s) => s.id !== scan.id && s.createdAt < scan.createdAt)
     .filter((s) => {
@@ -119,6 +119,14 @@ export function buildContext({ scan, history, role }) {
     },
     result,
     explainability: { methods: explain, concordance: scan.xai?.agreement || null, how_to_read: 'Grad-CAM: brighter = more attention. LIME and SHAP: red = pushes the score up (towards higher concern), blue = pushes it down.' },
+    // The passages themselves go into the prompt, not into this JSON: this only tells the model (and the report)
+    // whether the guideline library was available and which build of it the report was checked against.
+    rag: {
+      status: scan.rag?.status ?? 'unavailable',
+      corpus_sha: scan.rag?.corpus_sha ?? null,
+      built_at: scan.rag?.built_at ?? null,
+      n_passages: Array.isArray(scan.rag?.passages) ? scan.rag.passages.length : 0,
+    },
     history: history.map((h) => ({
       date: h.createdAt.slice(0, 10),
       days_before_this_scan: daysBetween(h.createdAt, scan.createdAt),

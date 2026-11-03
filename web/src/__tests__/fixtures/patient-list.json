@@ -1,8 +1,8 @@
 {
  "scans": [
   {
-   "id": "c0ff25f5-7411-4c3e-921d-e3e4831940b5",
-   "createdAt": "2026-10-25T03:13:44.533Z",
+   "id": "3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc",
+   "createdAt": "2026-11-01T04:12:23.725Z",
    "bodySite": "lower_extremity",
    "lesionLabel": "Left shin mole",
    "patientRef": null,
@@ -11,7 +11,7 @@
    "score": null,
    "topType": null,
    "hasReport": true,
-   "thumb": "/api/scans/c0ff25f5-7411-4c3e-921d-e3e4831940b5/files/model_view"
+   "thumb": "/api/scans/3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc/files/model_view"
   }
  ],
  "total": 1

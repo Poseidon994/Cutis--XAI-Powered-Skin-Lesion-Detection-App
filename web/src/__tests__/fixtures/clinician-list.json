@@ -1,8 +1,8 @@
 {
  "scans": [
   {
-   "id": "4be72e2b-998c-4d09-8029-e3cc6aed76cb",
-   "createdAt": "2026-10-25T03:13:47.824Z",
+   "id": "294ff602-b6b0-47ec-b296-912cf1e04fc8",
+   "createdAt": "2026-11-01T04:12:27.018Z",
    "bodySite": "posterior_torso",
    "lesionLabel": "R scapula",
    "patientRef": "MRN-0042",
@@ -11,7 +11,7 @@
    "score": 2.31,
    "topType": "Melanoma",
    "hasReport": true,
-   "thumb": "/api/scans/4be72e2b-998c-4d09-8029-e3cc6aed76cb/files/model_view"
+   "thumb": "/api/scans/294ff602-b6b0-47ec-b296-912cf1e04fc8/files/model_view"
   }
  ],
  "total": 1

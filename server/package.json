@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Cutis API: authentication, roles, scan history, ML orchestration, AI agent and PDF reports",
+  "description": "Cutis API: authentication, roles, scan history in MySQL, ML orchestration, guideline retrieval (RAG), AI agent and PDF reports",
   "engines": {
     "node": ">=22.13"
   },
@@ -20,6 +20,7 @@
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.5.0",
+    "mysql2": "^3.15.3",
     "pdfkit": "^0.20.2",
     "zod": "^4.6.7"
   }

@@ -48,9 +48,10 @@ export function authRouter(store) {
         return res.status(403).json({ error: 'invalid_invite', message: 'That clinician invite code is not valid.' });
       }
     }
-    if (store.userByEmail(d.email)) return res.status(409).json({ error: 'email_taken', message: 'An account with this email already exists.' });
+    if (store.userByEmail && (await store.userByEmail(d.email))) return res.status(409).json({ error: 'email_taken', message: 'An account with this email already exists.' });
     const passwordHash = await bcrypt.hash(d.password, config.bcryptRounds);
-    const user = store.createUser({ email: d.email, name: d.name, passwordHash, role: d.role, organisation: d.organisation, licenseNo: d.licenseNo });
+    const user = await store.createUser({ email: d.email, name: d.name, passwordHash, role: d.role, organisation: d.organisation, licenseNo: d.licenseNo });
+    if (!user) return res.status(409).json({ error: 'email_taken', message: 'An account with this email already exists.' });
     issueSession(res, user);
     res.status(201).json({ user: publicUser(user) });
   });
@@ -58,7 +59,7 @@ export function authRouter(store) {
   r.post('/login', limiter, async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: 'invalid_input', message: 'Enter your email and password.' });
-    const user = store.userByEmail(parsed.data.email);
+    const user = await store.userByEmail(parsed.data.email);
     const ok = await bcrypt.compare(parsed.data.password, user ? user.password_hash : DUMMY_HASH);
     if (!user || !ok) return res.status(401).json({ error: 'bad_credentials', message: 'Email or password is incorrect.' });
     issueSession(res, user);
@@ -73,9 +74,9 @@ export function authRouter(store) {
   r.get('/me', requireAuth(store), (req, res) => res.json({ user: publicUser(req.user) }));
 
   // Right to erasure: removes the account, every scan and every stored image.
-  r.delete('/me', requireAuth(store), (req, res) => {
-    for (const id of store.scanIdsForUser(req.user.id)) fs.rmSync(path.join(config.dataDir, 'scans', id), { recursive: true, force: true });
-    store.deleteUser(req.user.id);
+  r.delete('/me', requireAuth(store), async (req, res) => {
+    for (const id of await store.scanIdsForUser(req.user.id)) fs.rmSync(path.join(config.dataDir, 'scans', id), { recursive: true, force: true });
+    await store.deleteUser(req.user.id);
     clearSession(res);
     res.json({ ok: true });
   });

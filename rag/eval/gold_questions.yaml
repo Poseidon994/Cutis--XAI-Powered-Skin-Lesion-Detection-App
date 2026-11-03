@@ -1,0 +1,33 @@
+# Retrieval check set. `expect` = a retrieved passage counts as a hit if it contains ANY of these words.
+# `oos: true` = out of scope: the library must return nothing relevant. Add your own questions as you find gaps.
+
+questions:
+  # clinician, in scope
+  - {id: c_margins,     audience: clinician, q: "excision margins for a primary melanoma",                      expect: [margin]}
+  - {id: c_sln,         audience: clinician, q: "sentinel lymph node biopsy in melanoma staging",              expect: [sentinel]}
+  - {id: c_adjuvant,    audience: clinician, q: "adjuvant systemic therapy after resection of stage III melanoma", expect: [adjuvant]}
+  - {id: c_braf,        audience: clinician, q: "BRAF mutation testing and targeted therapy in melanoma",      expect: [braf]}
+  - {id: c_mohs,        audience: clinician, q: "Mohs micrographic surgery for basal cell carcinoma",          expect: [mohs]}
+  - {id: c_topical,     audience: clinician, q: "topical treatment for superficial basal cell carcinoma",      expect: [imiquimod, fluorouracil]}
+  - {id: c_hedgehog,    audience: clinician, q: "hedgehog pathway inhibitor for advanced basal cell carcinoma", expect: [vismodegib, sonidegib, hedgehog]}
+  - {id: c_scc_risk,    audience: clinician, q: "high-risk features of cutaneous squamous cell carcinoma",     expect: [perineural, high-risk, high risk]}
+  - {id: c_pd1,         audience: clinician, q: "anti-PD-1 therapy for advanced cutaneous squamous cell carcinoma", expect: [cemiplimab, pd-1]}
+  - {id: c_biopsy,      audience: clinician, q: "biopsy technique for a suspicious pigmented lesion",          expect: [biopsy]}
+  - {id: c_dermoscopy,  audience: clinician, q: "dermoscopy to evaluate a pigmented skin lesion",              expect: [dermoscop]}
+  - {id: c_followup,    audience: clinician, q: "follow-up and surveillance after melanoma treatment",         expect: [follow-up, surveillance]}
+  - {id: c_screening,   audience: clinician, q: "evidence for skin cancer screening by clinical skin examination", expect: [screening]}
+  - {id: c_riskfactors, audience: clinician, q: "risk factors for melanoma including ultraviolet exposure",    expect: [ultraviolet, sun exposure]}
+
+  # patient, in scope
+  - {id: p_abcde,       audience: patient, q: "ABCDE signs of a mole that may be skin cancer",                 expect: [asymmetr, border, evolving]}
+  - {id: p_see_doctor,  audience: patient, q: "when should I see a doctor about a changing mole",              expect: [doctor, change]}
+  - {id: p_biopsy,      audience: patient, q: "what happens during a skin biopsy",                             expect: [biopsy]}
+  - {id: p_self_check,  audience: patient, q: "how to check my own skin for changes",                          expect: [skin exam, self-exam, check your skin, examine]}
+  - {id: p_sunscreen,   audience: patient, q: "how to protect my skin from the sun",                           expect: [sunscreen, shade, clothing]}
+  - {id: p_sore,        audience: patient, q: "a sore on my skin that does not heal",                          expect: [sore, heal]}
+
+  # out of scope: nothing in a skin cancer library should answer these
+  - {id: o_pizza,       audience: clinician, oos: true, q: "best recipe for homemade pizza dough"}
+  - {id: o_bicycle,     audience: patient,   oos: true, q: "how to repair a flat bicycle tire"}
+  - {id: o_stocks,      audience: clinician, oos: true, q: "stock market investing strategy for beginners"}
+  - {id: o_diabetes,    audience: clinician, oos: true, q: "insulin dosing for type 2 diabetes"}

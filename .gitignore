@@ -8,3 +8,5 @@ __pycache__/
 *.pyc
 artifacts/*
 !artifacts/README.txt
+.venv/
+.env.example

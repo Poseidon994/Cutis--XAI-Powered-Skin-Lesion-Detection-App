@@ -1,7 +1,7 @@
 {
  "scan": {
-  "id": "c0ff25f5-7411-4c3e-921d-e3e4831940b5",
-  "createdAt": "2026-10-25T03:13:44.533Z",
+  "id": "3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc",
+  "createdAt": "2026-11-01T04:12:23.725Z",
   "bodySite": "lower_extremity",
   "lesionLabel": "Left shin mole",
   "patientRef": null,
@@ -75,7 +75,7 @@
     },
     "params": {},
     "runtimeS": 2.5,
-    "url": "/api/scans/c0ff25f5-7411-4c3e-921d-e3e4831940b5/files/gradcam?v=1792898024745"
+    "url": "/api/scans/3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc/files/gradcam?v=1793506343921"
    },
    "lime": {
     "status": "done",
@@ -106,7 +106,7 @@
     },
     "params": {},
     "runtimeS": 2.5,
-    "url": "/api/scans/c0ff25f5-7411-4c3e-921d-e3e4831940b5/files/lime?v=1792898024750"
+    "url": "/api/scans/3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc/files/lime?v=1793506343928"
    },
    "shap": {
     "status": "done",
@@ -137,7 +137,7 @@
     },
     "params": {},
     "runtimeS": 2.5,
-    "url": "/api/scans/c0ff25f5-7411-4c3e-921d-e3e4831940b5/files/shap?v=1792898024754"
+    "url": "/api/scans/3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc/files/shap?v=1793506343923"
    },
    "agreement": {
     "methods": [
@@ -174,7 +174,14 @@
    "status": "ready",
    "source": "groq",
    "model": "test-model",
-   "generatedAt": "2026-10-25T03:13:45.085Z",
+   "generatedAt": "2026-11-01T04:12:24.264Z",
+   "rag": {
+    "status": "ok",
+    "reason": null,
+    "embedder": "BAAI/bge-small-en-v1.5",
+    "corpus_sha": "a1b2c3d4e5f60718",
+    "built_at": "2026-10-20T00:00:00+00:00"
+   },
    "report": {
     "headline": "This spot looks higher concern and should be checked by a doctor.",
     "what_we_found": "The AI rated the photo as elevated concern.",
@@ -182,7 +189,7 @@
     "what_the_images_show": "Brighter areas show where the AI looked. Red pushed the rating up.",
     "next_steps": [
      {
-      "step": "Book a skin check with a dermatologist.",
+      "step": "Book a skin check with a dermatologist. [P2]",
       "when": "Within 2 to 4 weeks"
      },
      {
@@ -191,11 +198,12 @@
      }
     ],
     "see_a_doctor_sooner_if": [
-     "It bleeds.",
-     "It grows quickly."
+     "A skin cancer or a skin cancer can bleed or fail to heal [P1].",
+     "It grows quickly [P1]."
     ],
     "keep_an_eye_on_it": [
-     "Photograph every 4 weeks."
+     "Photograph every 4 weeks [P3].",
+     "Sunscreen and shade protect your skin [P3]."
     ],
     "questions_for_your_doctor": [
      "Does it need a biopsy?"
@@ -207,12 +215,69 @@
      "timeframe": "Within 2 to 4 weeks",
      "text": "Please book a skin check with a doctor or dermatologist within the next 2 to 4 weeks."
     },
-    "disclaimer": "Cutis is a research prototype. It cannot diagnose skin cancer and it can miss cancers, including when the result is low. Only a doctor, and usually a skin sample (biopsy), can tell you what a spot is. If you are worried about a spot, see a doctor whatever this result says."
+    "disclaimer": "Cutis is a research prototype. It cannot diagnose skin cancer and it can miss cancers, including when the result is low. Only a doctor, and usually a skin sample (biopsy), can tell you what a spot is. If you are worried about a spot, see a doctor whatever this result says.",
+    "sources": [
+     {
+      "label": "P1",
+      "chunk_id": "S10-001",
+      "source_id": "S10",
+      "title": "Symptoms of Skin Cancer",
+      "publisher": "CDC",
+      "url": "https://example.org/s10",
+      "licence": "CDC text, public domain unless noted; credit CDC",
+      "section": "Warning signs",
+      "page": null
+     },
+     {
+      "label": "P2",
+      "chunk_id": "S08-004",
+      "source_id": "S08",
+      "title": "Skin Cancer Screening (PDQ)-Patient Version",
+      "publisher": "NCI",
+      "url": "https://example.org/s08",
+      "licence": "NCI text, free of copyright; credit NCI",
+      "section": "What a skin check involves",
+      "page": 2
+     },
+     {
+      "label": "P3",
+      "chunk_id": "S09-002",
+      "source_id": "S09",
+      "title": "Skin Cancer Prevention (PDQ)-Patient Version",
+      "publisher": "NCI",
+      "url": "https://example.org/s09",
+      "licence": "NCI text, free of copyright; credit NCI",
+      "section": "Sun safety",
+      "page": null
+     }
+    ],
+    "grounding": {
+     "status": "partial",
+     "items": 6,
+     "cited": 5,
+     "ratio": 0.8333333333333334,
+     "by_field": {
+      "next_steps": {
+       "items": 2,
+       "cited": 1
+      },
+      "see_a_doctor_sooner_if": {
+       "items": 2,
+       "cited": 2
+      },
+      "keep_an_eye_on_it": {
+       "items": 2,
+       "cited": 2
+      }
+     },
+     "dropped": [],
+     "scrubbed": 2
+    }
    }
   },
   "files": {
-   "original": "/api/scans/c0ff25f5-7411-4c3e-921d-e3e4831940b5/files/original",
-   "modelView": "/api/scans/c0ff25f5-7411-4c3e-921d-e3e4831940b5/files/model_view"
+   "original": "/api/scans/3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc/files/original",
+   "modelView": "/api/scans/3c9dd0c3-66cd-4a14-9795-9dd54b95c0dc/files/model_view"
   },
   "guidance": {
    "kind": "urgency",
@@ -221,6 +286,33 @@
    "text": "Please book a skin check with a doctor or dermatologist within the next 2 to 4 weeks."
   }
  },
- "messages": [],
+ "messages": [
+  {
+   "id": 1,
+   "role": "user",
+   "content": "Should I be worried?",
+   "sources": [],
+   "createdAt": "2026-11-01T04:12:24.284Z"
+  },
+  {
+   "id": 2,
+   "role": "assistant",
+   "content": "Warning signs are described in the guidance [P1]. Please talk to your doctor about this spot.",
+   "sources": [
+    {
+     "label": "P1",
+     "chunk_id": "S10-001",
+     "source_id": "S10",
+     "title": "Symptoms of Skin Cancer",
+     "publisher": "CDC",
+     "url": "https://example.org/s10",
+     "licence": "CDC text, public domain unless noted; credit CDC",
+     "section": "Warning signs",
+     "page": null
+    }
+   ],
+   "createdAt": "2026-11-01T04:12:24.284Z"
+  }
+ ],
  "history": []
 }

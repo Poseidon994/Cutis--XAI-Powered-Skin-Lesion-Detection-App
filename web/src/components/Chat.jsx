@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api.js';
-import { Banner, Spinner } from './Bits.jsx';
+import { Banner, RichText, Sources, Spinner } from './Bits.jsx';
 
 const SUGGEST = {
   patient: ['What does this result mean?', 'What should I do next?', 'Do I need a biopsy?', 'How do I take a better photo?'],
@@ -31,6 +31,7 @@ export function Chat({ scanId, role, initial }) {
     setMsgs((m) => [...m, { id: `tmp-${Date.now()}`, role: 'user', content: message }]);
     setText('');
     try {
+      // One retrieval runs per question on the server; the answer comes back checked, with its sources.
       const r = await api.post(`/scans/${scanId}/agent/chat`, { message });
       setMsgs(r.messages);
     } catch (e) {
@@ -50,7 +51,12 @@ export function Chat({ scanId, role, initial }) {
         </div>
       )}
       <div className="msgs" aria-live="polite">
-        {msgs.map((m) => <div key={m.id} className={`msg ${m.role}`}>{m.content}</div>)}
+        {msgs.map((m) => (
+          <div key={m.id} className={`msg ${m.role}`}>
+            <RichText text={m.content} sources={m.sources} />
+            {m.role === 'assistant' && <Sources sources={m.sources} role={role} compact />}
+          </div>
+        ))}
         {busy && <div className="status-line"><Spinner /> Thinking...</div>}
         <div ref={end} />
       </div>
@@ -60,7 +66,7 @@ export function Chat({ scanId, role, initial }) {
         <input id="chat-q" type="text" value={text} maxLength={1000} onChange={(e) => setText(e.target.value)} placeholder={role === 'patient' ? 'Ask anything about this result' : 'Ask about this scan or its management'} />
         <button className="btn" disabled={busy || !text.trim()}>Ask</button>
       </form>
-      <p className="tiny" style={{ marginTop: 10 }}>The assistant sees your scan results and notes, not your photo. It cannot diagnose and can be wrong.</p>
+      <p className="tiny" style={{ marginTop: 10 }}>The assistant sees your scan results and notes, not your photo. It cannot diagnose and can be wrong. Answers are checked against the guideline library where it has something relevant, and cite the passage they came from.</p>
     </div>
   );
 }

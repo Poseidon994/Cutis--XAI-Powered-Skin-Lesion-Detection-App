@@ -7,8 +7,8 @@ ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 TQDM_DISABLE=1 ARTIFACTS_DIR=/artifact
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /srv
 RUN pip install torch torchvision --index-url ${TORCH_INDEX}
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.txt requirements-rag.txt ./
+RUN pip install -r requirements.txt -r requirements-rag.txt
 COPY app ./app
 COPY scripts ./scripts
 RUN useradd -m cutis && chown -R cutis /srv

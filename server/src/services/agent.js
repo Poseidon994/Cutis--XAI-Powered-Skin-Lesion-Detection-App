@@ -1,7 +1,11 @@
 // The AI agent: turns a scan's structured results into a role-appropriate explanation (patient or clinician) with Groq,
 // and falls back to deterministic templates when no key is configured or the model's output is unusable.
+// When guideline retrieval (RAG) produced passages, they are appended to the prompt with citation rules, and the
+// model's answer is checked in code by services/citations.js: markers validated, patient type names scrubbed,
+// uncited medicine statements dropped, and the surviving sources listed for the report and the PDF.
 import { config } from '../config.js';
 import { CLINICIAN_DISPOSITION, DISCLAIMER, PATIENT_URGENCY, TIERS } from '../constants.js';
+import { passagesBlock, PATIENT_RAG_RULES, RAG_RULES, stripMarkers, validateCitations, validateChatCitations } from './citations.js';
 
 export class AgentError extends Error {
   constructor(message, status = 502) {
@@ -354,18 +358,41 @@ export function templateReport(role, ctx) {
 }
 
 // --------------------------------------------------------------------------------------------------------- public API
-export async function generateReport(role, ctx) {
+const NO_GROUNDING = { status: 'unavailable', items: 0, cited: 0, ratio: null, by_field: {}, dropped: [], scrubbed: 0 };
+
+function ragMeta(rag) {
+  return {
+    status: rag?.status ?? 'unavailable',
+    reason: rag?.reason ?? null,
+    embedder: rag?.embedder ?? null,
+    corpus_sha: rag?.corpus_sha ?? null,
+    built_at: rag?.built_at ?? null,
+  };
+}
+
+const passagesOf = (rag) => (Array.isArray(rag?.passages) && rag.status === 'ok' ? rag.passages : []);
+
+function systemPrompt(role, passages) {
+  const base = role === 'patient' ? PATIENT_SYSTEM : CLINICIAN_SYSTEM;
+  if (!passages?.length) return base;
+  return `${base}\n\n${role === 'patient' ? PATIENT_RAG_RULES : RAG_RULES}\n\n${passagesBlock(passages)}`;
+}
+
+const ungrounded = (report) => ({ ...stripMarkers(report), sources: [], grounding: { ...NO_GROUNDING } });
+
+export async function generateReport(role, ctx, rag = null) {
   const tpl = role === 'patient' ? templatePatient(ctx) : templateClinician(ctx);
-  const meta = { source: 'template', generatedAt: new Date().toISOString(), role };
+  const meta = { source: 'template', generatedAt: new Date().toISOString(), role, rag: ragMeta(rag) };
+  const passages = passagesOf(rag);
   if (!agentConfigured()) {
     meta.reason = 'no_api_key';
-    return { report: enforce(role, tpl, tpl, ctx, meta), meta };
+    return { report: ungrounded(enforce(role, tpl, tpl, ctx, meta)), meta };
   }
   try {
     const { text, model } = await groqChat({
       json: true,
       messages: [
-        { role: 'system', content: role === 'patient' ? PATIENT_SYSTEM : CLINICIAN_SYSTEM },
+        { role: 'system', content: systemPrompt(role, passages) },
         { role: 'user', content: `case_context:\n${JSON.stringify(ctx)}\n\nReturn the JSON object now.` },
       ],
     });
@@ -374,23 +401,29 @@ export async function generateReport(role, ctx) {
     const normalised = role === 'patient' ? normalisePatient(raw, tpl) : normaliseClinician(raw, tpl);
     meta.source = 'groq';
     meta.model = model;
-    return { report: enforce(role, normalised, tpl, ctx, meta), meta };
+    const enforced = enforce(role, normalised, tpl, ctx, meta);
+    if (!passages.length) return { report: ungrounded(enforced), meta };
+    const { report, sources, grounding } = validateCitations(enforced, passages, { role });
+    return { report: { ...report, sources, grounding }, meta };
   } catch (e) {
     meta.reason = 'agent_error';
     meta.error = String(e.message || e).slice(0, 200);
-    return { report: enforce(role, tpl, tpl, ctx, meta), meta };
+    return { report: ungrounded(enforce(role, tpl, tpl, ctx, meta)), meta };
   }
 }
 
-export async function chatReply(role, ctx, history, message) {
-  const sys = `${role === 'patient' ? CHAT_PATIENT : CHAT_CLINICIAN}\n\ncase_context:\n${JSON.stringify(ctx)}`;
+export async function chatReply(role, ctx, history, message, passages = []) {
+  const base = role === 'patient' ? CHAT_PATIENT : CHAT_CLINICIAN;
+  const ragBlock = passages?.length ? `\n\n${role === 'patient' ? PATIENT_RAG_RULES : RAG_RULES}\n\n${passagesBlock(passages)}` : '';
+  const sys = `${base}${ragBlock}\n\ncase_context:\n${JSON.stringify(ctx)}`;
   const msgs = [{ role: 'system', content: sys }, ...history.slice(-12).map((m) => ({ role: m.role, content: m.content.slice(0, 1500) })), { role: 'user', content: message }];
   const { text, model } = await groqChat({ messages: msgs, temperature: 0.3, maxTokens: 700 });
   let reply = text.trim();
   if (role === 'patient' && PATIENT_BANNED.test(reply)) {
     reply = 'I can\'t say what this spot is, and no AI tool can. Only a doctor can diagnose a skin lesion, often with a small skin sample. If you are worried, please book a check, and seek care promptly if the spot bleeds, grows quickly or hurts.';
   }
-  return { reply, model };
+  const checked = validateChatCitations(reply, passages, { role });
+  return { reply: checked.text, model, sources: checked.sources, grounding: checked.grounding };
 }
 
 export const tierRank = (t) => TIERS[t]?.rank ?? 0;

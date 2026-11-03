@@ -23,12 +23,12 @@ export function publicUser(u) {
 }
 
 export function requireAuth(store) {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const token = req.cookies?.[COOKIE];
     if (!token) return res.status(401).json({ error: 'not_authenticated', message: 'Please sign in.' });
     try {
       const payload = jwt.verify(token, config.jwtSecret);
-      const user = store.userById(Number(payload.sub));
+      const user = await store.userById(Number(payload.sub));
       if (!user) throw new Error('unknown user');
       req.user = user;
       next();

@@ -36,10 +36,23 @@ export const config = {
   maxUploadMb: num(env.MAX_UPLOAD_MB, 10),
   trustProxy: env.TRUST_PROXY ? env.TRUST_PROXY : production ? 1 : false,
   staticDir: env.STATIC_DIR || '',
+  db: {
+    host: env.DB_HOST || '127.0.0.1',
+    port: num(env.DB_PORT, 3306),
+    user: env.DB_USER || 'cutis',
+    password: env.DB_PASSWORD || '',
+    database: env.DB_NAME || 'cutis',
+    connectionLimit: num(env.DB_POOL, 10),
+  },
   ml: {
     url: (env.ML_SERVICE_URL || 'http://localhost:8000').replace(/\/$/, ''),
     key: env.ML_SERVICE_KEY || '',
     timeoutMs: num(env.ML_TIMEOUT_MS, 300000),
+  },
+  rag: {
+    enabled: env.RAG_ENABLED !== '0',
+    maxPassages: num(env.RAG_MAX_PASSAGES, 6),
+    timeoutMs: num(env.RAG_TIMEOUT_MS, 8000),
   },
   groq: {
     key: env.GROQ_API_KEY || '',

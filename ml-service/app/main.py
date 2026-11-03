@@ -17,6 +17,7 @@ from .artifacts import ArtifactError, describe_lib_difference, load_artifacts
 from .calibration import ImageCalibration
 from .config import get_settings
 from .imaging import ImageError, png_b64, prepare
+from .rag.api import get_service as rag_service, router as rag_router
 
 LIMITATIONS = [
     'Trained on ISIC 2024 (SLICE-3D): 15 x 15 mm lesion crops cut from 3D total-body photography of about 1,000 patients at nine centres. '
@@ -109,7 +110,8 @@ async def lifespan(_app):
     yield
 
 
-app = FastAPI(title='Cutis ML service', version='1.0.0', lifespan=lifespan)
+app = FastAPI(title='Cutis ML service', version='1.1.0', lifespan=lifespan)
+app.include_router(rag_router)  # /rag/retrieve, /rag/status, /rag/reload behind the same shared secret
 
 
 def require_key(x_service_key: str | None = Header(default=None)):
@@ -126,11 +128,17 @@ def require_ready():
 @app.get('/health')
 def health():
     ens = state.ens
+    rag = None
+    try:
+        rag = rag_service().status()
+    except Exception as e:  # noqa: BLE001  # a RAG problem must never take down health
+        rag = {'enabled': True, 'ready': False, 'reason': f'{type(e).__name__}: {e}', 'warnings': []}
     return {'status': state.status, 'ready': state.status == 'ready', 'error': state.error, 'notes': state.notes,
             'device': str(ens.dev) if ens else None, 'networks': len(ens.nets) if ens else 0,
             'backbones': ens.backbones if ens else [], 'uptime_s': round(time.time() - state.started, 1),
             'calibration': state.calib.source if state.calib else None,
-            'artifact_version': state.art.meta.get('created') if state.art else None}
+            'artifact_version': state.art.meta.get('created') if state.art else None,
+            'rag': {k: rag.get(k) for k in ('enabled', 'ready', 'reason', 'n_chunks', 'n_sources', 'built_at', 'embedder', 'dense', 'warnings')}}
 
 
 @app.get('/model-card', dependencies=[Depends(require_key), Depends(require_ready)])

@@ -1,0 +1,83 @@
+[
+ {
+  "id": "S01",
+  "title": "Melanoma Treatment (PDQ\u00ae)\u2013Health Professional Version",
+  "source": "https://www.cancer.gov/types/skin/hp/melanoma-treatment-pdq",
+  "status": "cached",
+  "bytes": 388150,
+  "words": 29916,
+  "fetched_at": "2026-11-01T10:43:16+00:00"
+ },
+ {
+  "id": "S02",
+  "title": "Skin Cancer Treatment (PDQ\u00ae)\u2013Health Professional Version",
+  "source": "https://www.cancer.gov/types/skin/hp/skin-treatment-pdq",
+  "status": "cached",
+  "bytes": 208696,
+  "words": 13295,
+  "fetched_at": "2026-11-01T10:43:16+00:00"
+ },
+ {
+  "id": "S03",
+  "title": "Skin Cancer Screening (PDQ\u00ae)\u2013Health Professional Version",
+  "source": "https://www.cancer.gov/types/skin/hp/skin-screening-pdq",
+  "status": "cached",
+  "bytes": 79030,
+  "words": 3747,
+  "fetched_at": "2026-11-01T10:43:16+00:00"
+ },
+ {
+  "id": "S04",
+  "title": "Skin Cancer Prevention (PDQ\u00ae)\u2013Health Professional Version",
+  "source": "https://www.cancer.gov/types/skin/hp/skin-prevention-pdq",
+  "status": "cached",
+  "bytes": 121108,
+  "words": 6647,
+  "fetched_at": "2026-11-01T10:43:16+00:00"
+ },
+ {
+  "id": "S06",
+  "title": "Melanoma Treatment (PDQ\u00ae)\u2013Patient Version",
+  "source": "https://www.cancer.gov/types/skin/patient/melanoma-treatment-pdq",
+  "status": "cached",
+  "bytes": 168148,
+  "words": 6381,
+  "fetched_at": "2026-11-01T10:43:16+00:00"
+ },
+ {
+  "id": "S07",
+  "title": "Skin Cancer Treatment (PDQ\u00ae)\u2013Patient Version",
+  "source": "https://www.cancer.gov/types/skin/patient/skin-treatment-pdq",
+  "status": "cached",
+  "bytes": 211136,
+  "words": 7475,
+  "fetched_at": "2026-11-01T10:43:17+00:00"
+ },
+ {
+  "id": "S08",
+  "title": "Skin Cancer Screening (PDQ\u00ae)\u2013Patient Version",
+  "source": "https://www.cancer.gov/types/skin/patient/skin-screening-pdq",
+  "status": "cached",
+  "bytes": 74867,
+  "words": 2208,
+  "fetched_at": "2026-11-01T10:43:17+00:00"
+ },
+ {
+  "id": "S09",
+  "title": "Skin Cancer Prevention (PDQ\u00ae)\u2013Patient Version",
+  "source": "https://www.cancer.gov/types/skin/patient/skin-prevention-pdq",
+  "status": "cached",
+  "bytes": 82872,
+  "words": 2588,
+  "fetched_at": "2026-11-01T10:43:17+00:00"
+ },
+ {
+  "id": "S10",
+  "title": "Symptoms of Skin Cancer",
+  "source": "https://www.cdc.gov/skin-cancer/symptoms/index.html",
+  "status": "cached",
+  "bytes": 52462,
+  "words": 329,
+  "fetched_at": "2026-11-01T10:43:17+00:00"
+ }
+]

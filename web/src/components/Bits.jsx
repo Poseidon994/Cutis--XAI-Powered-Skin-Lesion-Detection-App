@@ -13,6 +13,55 @@ export function Banner({ kind = 'info', children }) {
 
 export const TierChip = ({ tier }) => <span className={`tier tier-chip ${tier}`}>{TIERS[tier]?.label || tier}</span>;
 
+// Renders text that may contain [P1], [P2]... citation markers: each becomes a small link to the
+// matching entry in the Sources list (when that passage is actually a listed source).
+export function RichText({ text, sources = [] }) {
+  const value = String(text ?? '');
+  if (!value) return null;
+  const known = new Set((sources || []).map((s) => s.label));
+  const parts = value.split(/(\[P\d{1,2}\])/g);
+  if (parts.length === 1) return <>{value}</>;
+  return (
+    <>
+      {parts.map((part, i) => {
+        const m = part.match(/^\[(P\d{1,2})\]$/);
+        if (!m) return <span key={i}>{part}</span>;
+        const label = m[1];
+        return known.has(label) ? (
+          <a key={i} className="cite" href={`#src-${label}`} title={`Source ${label}`} onClick={(e) => { e.preventDefault(); document.getElementById(`src-${label}`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }}>[{label}]</a>
+        ) : (
+          <span key={i} className="cite dead">[{label}]</span>
+        );
+      })}
+    </>
+  );
+}
+
+// The source list a report or chat answer is grounded on. Patients see a short list; clinicians get
+// the excerpt, link and licence so claims can be traced back to the page they came from.
+export function Sources({ sources, role, rag = null, compact = false }) {
+  if (!sources?.length) return null;
+  return (
+    <div className={`sources${compact ? ' compact' : ''}`}>
+      {!compact && <h3>Guideline sources for this {role === 'clinician' ? 'report' : 'explanation'}</h3>}
+      <ol>
+        {sources.map((s) => (
+          <li key={s.label} id={`src-${s.label}`}>
+            {s.url ? (
+              <a href={s.url} target="_blank" rel="noopener noreferrer">[{s.label}] {s.title}</a>
+            ) : (
+              <span>[{s.label}] {s.title}</span>
+            )}
+            <span className="tiny muted"> — {s.publisher}{s.section ? `, ${s.section}` : ''}{s.page != null ? `, p. ${s.page}` : ''}{role === 'clinician' && s.licence ? ` (${s.licence})` : ''}</span>
+            {role === 'clinician' && s.excerpt && !compact && <blockquote className="tiny">{s.excerpt}</blockquote>}
+          </li>
+        ))}
+      </ol>
+      {rag?.built_at && <p className="tiny muted">Library snapshot built {fmtDate(rag.built_at)}. Excerpts are reused from the original pages under each publisher's reuse policy. Cutis is not endorsed by the publishers, and this text is not an NCI, CDC or PDQ product.</p>}
+    </div>
+  );
+}
+
 export function TypeBars({ probs }) {
   const rows = Object.entries(probs || {}).sort((a, b) => b[1] - a[1]);
   return (

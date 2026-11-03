@@ -1,0 +1,107 @@
+# Every document the guideline library is built from.
+#
+#   id        S01, S02, ... (never reuse an id: it appears in stored reports)
+#   audience  clinician | patient | both   (patients are only ever shown passages from patient/both sources)
+#   topics    tags used to nudge retrieval: melanoma, bcc, scc, screening, prevention, diagnosis, symptoms, genetics
+#   url       a page to download   |   file: a file you saved yourself into rag/corpus/manual/
+#   selector  optional CSS selector for the main content, if a page comes out empty or full of menu text
+#   enabled   false to leave a source out without deleting the entry
+#
+# Licences (checked October 2026; re-check before any public use):
+#   NCI  - text is free of copyright, credit the National Cancer Institute: https://www.cancer.gov/policies/copyright-reuse
+#   CDC  - most text is public domain, credit CDC, do not imply endorsement: https://www.cdc.gov/other/agencymaterials.html
+# Graphics on these sites can be copyrighted by others; this library keeps text only.
+# NCI also asks for a link to the original page under its original title, and reserves the NCI logo and the PDQ mark
+# for unchanged NCI products: cite these pages by title, but never label Cutis's own text as PDQ.
+
+sources:
+  # ---- clinician library: NCI PDQ health professional summaries ----
+  - id: S01
+    title: "Melanoma Treatment (PDQ®)–Health Professional Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/hp/melanoma-treatment-pdq"
+    audience: clinician
+    topics: [melanoma, diagnosis]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S02
+    title: "Skin Cancer Treatment (PDQ®)–Health Professional Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/hp/skin-treatment-pdq"
+    audience: clinician
+    topics: [bcc, scc, diagnosis]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S03
+    title: "Skin Cancer Screening (PDQ®)–Health Professional Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/hp/skin-screening-pdq"
+    audience: clinician
+    topics: [screening, melanoma, bcc, scc]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S04
+    title: "Skin Cancer Prevention (PDQ®)–Health Professional Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/hp/skin-prevention-pdq"
+    audience: clinician
+    topics: [prevention]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S05
+    title: "Genetics of Skin Cancer (PDQ®)–Health Professional Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/hp/skin-genetics-pdq"
+    audience: clinician
+    topics: [genetics, melanoma, bcc, scc]
+    licence: "NCI text, free of copyright; credit NCI"
+    enabled: false   # optional: risk-factor and syndrome detail; switch on if you want it (page address not yet confirmed)
+
+  # ---- patient library: plain-language NCI and CDC pages ----
+  - id: S06
+    title: "Melanoma Treatment (PDQ®)–Patient Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/patient/melanoma-treatment-pdq"
+    audience: patient
+    topics: [diagnosis, symptoms]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S07
+    title: "Skin Cancer Treatment (PDQ®)–Patient Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/patient/skin-treatment-pdq"
+    audience: patient
+    topics: [diagnosis, symptoms]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S08
+    title: "Skin Cancer Screening (PDQ®)–Patient Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/patient/skin-screening-pdq"
+    audience: patient
+    topics: [screening]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S09
+    title: "Skin Cancer Prevention (PDQ®)–Patient Version"
+    publisher: "National Cancer Institute (NCI)"
+    url: "https://www.cancer.gov/types/skin/patient/skin-prevention-pdq"
+    audience: patient
+    topics: [prevention]
+    licence: "NCI text, free of copyright; credit NCI"
+
+  - id: S10
+    title: "Symptoms of Skin Cancer"
+    publisher: "Centers for Disease Control and Prevention (CDC)"
+    url: "https://www.cdc.gov/skin-cancer/symptoms/index.html"
+    audience: patient
+    topics: [symptoms]
+    licence: "CDC text, public domain unless noted; credit CDC"
+
+# ---- adding more ----
+# Open-access clinical guidelines would make the clinician library stronger than PDQ alone (for example the
+# European consensus melanoma guideline, the British Association of Dermatologists guidelines for basal cell and
+# cutaneous squamous cell carcinoma, and the ESMO melanoma guideline). Before adding one: find the current version,
+# read its licence (many allow non-commercial reuse with credit but forbid changes), save the PDF into
+# rag/corpus/manual/, then add an entry here with `file:` instead of `url:` and the licence copied from the PDF.
+# Do not add NCCN guidelines, UpToDate, or society patient pages that carry "all rights reserved".

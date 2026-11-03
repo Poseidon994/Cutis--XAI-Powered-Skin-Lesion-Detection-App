@@ -71,7 +71,7 @@ describe('sign-in page', () => {
 });
 
 describe('patient pages', () => {
-  it('renders the result in plain language, without clinician-only numbers', async () => {
+  it('renders the result in plain language, without clinician-only numbers, and cites its guideline sources', async () => {
     const calls = [];
     mockFetch(patient, patientScan, patientList, calls);
     renderAt(`/scan/${patientScan.scan.id}`);
@@ -86,6 +86,18 @@ describe('patient pages', () => {
     expect(document.body.textContent).not.toMatch(/z = 2\.31/);
     expect(screen.getByRole('link', { name: /Download report/ }).getAttribute('href')).toBe(`/api/scans/${patientScan.scan.id}/report.pdf`);
     expect(calls.filter((c) => c.startsWith('POST'))).toEqual([]);
+    // ---- guideline sources: markers in the text link to a source list, and no cancer-type names are shown
+    expect(document.body.textContent).not.toMatch(/basal cell carcinoma|squamous cell carcinoma|melanoma/i);
+    const cites = screen.getAllByText(/\[P1\]|\[P2\]|\[P3\]/);
+    expect(cites.length).toBeGreaterThanOrEqual(3);
+    expect(cites.every((c) => c.tagName === 'A' || c.closest('a') || c.className.includes('cite'))).toBe(true);
+    expect((await screen.findAllByText(/\[P1\] Symptoms of Skin Cancer/)).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Guideline check: 5 of 6 statements are cited/)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/may bleed, crust or fail to heal/); // patient sources carry no excerpt
+    // the chat answer cites its passage: the marker is a link, and the passage is listed under the answer
+    expect(screen.getByText(/Warning signs are described in the guidance/)).toBeTruthy();
+    expect(screen.getAllByText(/\[P1\]/).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/The assistant sees your scan results/)).toBeTruthy();
   });
 
   it('lists past scans on the home page', async () => {
@@ -122,7 +134,7 @@ describe('patient pages', () => {
 });
 
 describe('clinician pages', () => {
-  it('renders scores, evidence, differential, options and the disposition rule', async () => {
+  it('renders scores, evidence, differential, options, the disposition rule and the cited sources', async () => {
     mockFetch(clinician, clinicianScan, clinicianList);
     renderAt(`/scan/${clinicianScan.scan.id}`);
     expect(await screen.findByRole('heading', { name: 'High concern', level: 1 })).toBeTruthy();
@@ -131,11 +143,21 @@ describe('clinician pages', () => {
     expect(screen.getByText('z = 2.31')).toBeTruthy();
     expect(screen.getAllByRole('table').length).toBeGreaterThanOrEqual(2);
     expect(await screen.findByRole('heading', { name: 'Differential considerations' })).toBeTruthy();
-    expect(screen.getByText('Wide local excision.')).toBeTruthy();
+    expect(screen.getByText(/Wide local excision with margins by thickness/)).toBeTruthy();
     expect(screen.getByText('Imiquimod 5% cream')).toBeTruthy();
+    expect(screen.queryByText(/Vismodegib/)).toBeNull(); // uncited medicine statements are dropped server-side
     expect(screen.getAllByText(/Disposition rule for this tier/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Agreement between the three maps/)).toBeTruthy();
     for (const t of ['Grad-CAM', 'LIME', 'SHAP']) expect(screen.getByRole('heading', { name: t })).toBeTruthy();
+    // ---- sources with excerpt, licence and link
+    expect(screen.getByText(/Guideline check: 3 of 7 statements are cited/)).toBeTruthy();
+    expect(screen.getByText(/Guideline sources for this report/)).toBeTruthy();
+    const source = screen.getByRole('link', { name: /\[P1\] Melanoma Treatment \(PDQ\)-Health Professional Version/ });
+    expect(source.getAttribute('href')).toBe('https://example.org/s01');
+    expect(screen.getByText(/Wide local excision margins depend on tumour thickness/)).toBeTruthy(); // excerpt shown to clinicians
+    expect(screen.getAllByText(/NCI text, free of copyright; credit NCI/).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/Library snapshot built/)).toBeTruthy();
+    expect(screen.getByText(/not an NCI, CDC or PDQ product/)).toBeTruthy();
   });
 
   it('asks for a patient reference on the new-analysis form', async () => {
