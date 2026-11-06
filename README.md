@@ -8,6 +8,8 @@ Demo Video: https://drive.google.com/file/d/1wW2HpNLZJLeTPxsyqKVyHWO4aRb4MgZM/vi
 ![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react&logoColor=black)
 ![MySQL](https://img.shields.io/badge/PostgreSQL-DB-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+
+
 A skin-lesion check built around the ISIC 2024 ensemble from `isic2024_v4_train.ipynb`. Same shape as Ocula: React frontend, Express API, FastAPI model service, Docker.
 
 - Sign in as a **patient** or a **clinician**. Each gets different screens, different wording, and a different report.
