@@ -1,6 +1,13 @@
 # Cutis
 Demo Video: https://drive.google.com/file/d/1wW2HpNLZJLeTPxsyqKVyHWO4aRb4MgZM/view?usp=sharing
 
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-ML-EE4C2C?logo=pytorch&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-ML%20Service-009688?logo=fastapi&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react&logoColor=black)
+![MySQL](https://img.shields.io/badge/PostgreSQL-DB-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 A skin-lesion check built around the ISIC 2024 ensemble from `isic2024_v4_train.ipynb`. Same shape as Ocula: React frontend, Express API, FastAPI model service, Docker.
 
 - Sign in as a **patient** or a **clinician**. Each gets different screens, different wording, and a different report.
