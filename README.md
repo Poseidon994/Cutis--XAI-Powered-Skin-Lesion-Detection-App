@@ -1,4 +1,5 @@
-# Cutis
+# Cutis: An AI-Powered Skin-Lesion Screening Platform with Explainable Ensemble Deep Learning and Guideline-Grounded Reporting
+
 Demo Video: https://drive.google.com/file/d/1wW2HpNLZJLeTPxsyqKVyHWO4aRb4MgZM/view?usp=sharing
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
